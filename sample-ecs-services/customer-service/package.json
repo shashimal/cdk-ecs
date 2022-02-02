@@ -1,5 +1,5 @@
 {
-  "name": "frontend-app",
+  "name": "customer-service",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -15,4 +15,6 @@
   "author": "",
   "license": "ISC",
   "type": "module"
+
+
 }
