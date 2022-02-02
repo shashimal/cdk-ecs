@@ -63,7 +63,8 @@ export class CdkEcsStack extends Stack {
         //Setup ECS services
         this.setupEcsServices();
 
-        this.setupRoute53HostedZone();
+        //Setup Route53 private hosted zone for a friendly URL for our internal load balancer
+        this.setupRoute53PrivateHostedZone();
     }
 
     private setupECR = () => {
@@ -119,7 +120,7 @@ export class CdkEcsStack extends Stack {
             vpc: this.vpc
         });
 
-        this.internalAlbSecurityGroup.addIngressRule(Peer.ipv4(this.vpc.vpcCidrBlock),Port.tcp(80),'Internal HTTP Access');
+        this.internalAlbSecurityGroup.addIngressRule(Peer.ipv4(this.vpc.vpcCidrBlock), Port.tcp(80), 'Internal HTTP Access');
 
         this.internalAlb = new ApplicationLoadBalancer(this, 'InternalAlb', {
             vpc: this.vpc,
@@ -143,10 +144,9 @@ export class CdkEcsStack extends Stack {
     private setupEcsServices = () => {
         for (let service of this.configParams.services) {
             const {
-                name, internetFacing,
-                memoryLimit, cpuLimit, containerPort, desiredCount, priority, healthCheckPath,albPath
+                name, internetFacing, memoryLimit, cpuLimit, containerPort,
+                desiredCount, priority, healthCheckPath, albPath
             } = service;
-
 
             //Creating the ECS task definition
             const taskDefinition = new FargateTaskDefinition(this, `${name}-TaskDefinition`, {
@@ -166,14 +166,12 @@ export class CdkEcsStack extends Stack {
                 }]
             });
 
-
             //Creating the ECS service
             const ecsService = new FargateService(this, `${name}-ECS-Service`, {
                 cluster: this.cluster,
                 taskDefinition,
                 desiredCount,
-                assignPublicIp: internetFacing,
-                //securityGroups: [serviceSecurityGroup]
+                assignPublicIp: internetFacing
             });
 
             //Register with load balancer targets
@@ -194,13 +192,13 @@ export class CdkEcsStack extends Stack {
         }
     }
 
-    private setupRoute53HostedZone = ()=> {
-        const privateHostedZone = new PrivateHostedZone(this, 'Route53-Private-HostedZone',{
+    private setupRoute53PrivateHostedZone = () => {
+        const privateHostedZone = new PrivateHostedZone(this, 'Route53-Private-HostedZone', {
             vpc: this.vpc,
             zoneName: "service.internal",
         });
 
-        const aliasRecordForInternalAlb = new ARecord(this, 'AliasRecord',{
+        new ARecord(this, 'AliasRecord', {
             target: RecordTarget.fromAlias(new LoadBalancerTarget(this.internalAlb)),
             zone: privateHostedZone
         })
