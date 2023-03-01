@@ -1,8 +1,10 @@
-# Welcome to your CDK TypeScript project!
+# ECS Service Communication Using an Internal Load Balancer
 
-This is a blank project for TypeScript development with CDK.
+This repository contains the AWS CDK implementaton for creating an ECS cluster with multiple ECS services. You can find the step by step instructions from this article.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+### Architecture
+
+![ECS Service Communication Using an Internal Load Balancer](ecs.png?raw=true)
 
 ## Useful commands
 
