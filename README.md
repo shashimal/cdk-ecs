@@ -4,7 +4,7 @@ This repository contains the AWS CDK implementaton for creating an ECS cluster w
 
 ### Architecture
 
-![ECS Service Communication Using an Internal Load Balancer](ecs.png?raw=true)
+![ECS Service Communication Using an Internal Load Balancer](ecs-service-communicatoin.png?raw=true)
 
 ## Useful commands
 
